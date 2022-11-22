@@ -20,7 +20,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
 torch.manual_seed(0)
-
+googleNet = torch.hub.load('pytorch/vision:v0.10.0', 'googlenet', pretrained=True)
+Google = googleNet
 def get_class(model,data):
     classes =['Autos & Vehicles','Food & Drink','Pets & Animals','Science & Education','Sports']
     model.eval()
@@ -29,12 +30,13 @@ def get_class(model,data):
     real_predict=[]
     real_symbols=[]
     output = model(Google(data))
-    pred = output.max(1, keepdim=True)[1]
+    print(output)
+    pred = output.max(1, keepdim=True)[1][0][0]
     #for predict_batch in predict:
     #    for predicts in predict_batch:
      #       real_predict.append(classes[predicts.item()])
     #print(pred)
-    return classes[pred.item()]
+    return classes[pred]
 
 def load_picture(path):
     image = Image.open(path)
@@ -49,7 +51,7 @@ def load_picture(path):
 
 googleNet = torch.hub.load('pytorch/vision:v0.10.0', 'googlenet', pretrained=True)
 
-Google = googleNet
+
 class ANNClassifier_GOOGLE(nn.Module):
     def __init__(self):
         super(ANNClassifier_GOOGLE, self).__init__()
@@ -62,7 +64,7 @@ class ANNClassifier_GOOGLE(nn.Module):
         return x
 
 model = ANNClassifier_GOOGLE()
-model.load_state_dict(torch.load(r'C:\Users\tongt\Desktop\model',map_location=torch.device('cpu')))
+model.load_state_dict(torch.load(r'C:\Users\tongt\Desktop\another_model',map_location=torch.device('cpu')))
 model.eval()
 
 class ChildWindow(QDialog):
@@ -155,3 +157,5 @@ if __name__ == '__main__':
     gui.show()
     gui.setGeometry(20,30,1920,1080)
     sys.exit(app.exec_())
+
+    #Cite: https://stackoverflow.com/questions/60614561/how-to-ask-user-to-input-an-image-in-pyqt5
