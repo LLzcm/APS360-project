@@ -1,17 +1,7 @@
-import time
-import os
-import numpy as np
 import torch
-from torch.utils.data import random_split
-import torchvision
-from torchvision import datasets, models, transforms
-import matplotlib.pyplot as plt
-import os
+from torchvision import transforms
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-import torchvision
-from torch.utils.data.sampler import SubsetRandomSampler
 import torchvision.transforms as transforms
 from PIL import Image
 import sys
@@ -19,18 +9,11 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
-torch.manual_seed(0)
-googleNet = torch.hub.load('pytorch/vision:v0.10.0', 'googlenet', pretrained=True)
-Google = googleNet
 def get_class(model,data):
     classes =['Autos & Vehicles','Food & Drink','Pets & Animals','Science & Education','Sports']
-    model.eval()
-    predict=[]
-    truth=[]
-    real_predict=[]
-    real_symbols=[]
     output = model(Google(data))
     print(output)
+    pred = None
     pred = output.max(1, keepdim=True)[1][0][0]
     #for predict_batch in predict:
     #    for predicts in predict_batch:
@@ -40,7 +23,6 @@ def get_class(model,data):
 
 def load_picture(path):
     image = Image.open(path)
-
    # data_transform = transforms.Compose([transforms.RandomResizedCrop(224),transforms.ToTensor()])
     #validation_set = datasets.ImageFolder(path, transform=data_transform)
     transform = transforms.RandomResizedCrop(224)
@@ -48,8 +30,6 @@ def load_picture(path):
     validation_set=transforms.functional.to_tensor(image)
     validation_set=validation_set.unsqueeze(0)
     return validation_set
-
-googleNet = torch.hub.load('pytorch/vision:v0.10.0', 'googlenet', pretrained=True)
 
 
 class ANNClassifier_GOOGLE(nn.Module):
@@ -63,9 +43,6 @@ class ANNClassifier_GOOGLE(nn.Module):
         #x = self.fc2(x)
         return x
 
-model = ANNClassifier_GOOGLE()
-model.load_state_dict(torch.load(r'C:\Users\tongt\Desktop\another_model',map_location=torch.device('cpu')))
-model.eval()
 
 class ChildWindow(QDialog):
     def __init__(self,text):
@@ -152,6 +129,11 @@ class Template(QWidget):
         self.chile_Win.exec_
 
 if __name__ == '__main__':
+    googleNet = torch.hub.load('pytorch/vision:v0.10.0', 'googlenet', pretrained=True)
+    Google = googleNet
+    model = ANNClassifier_GOOGLE()
+    model.load_state_dict(torch.load(r'C:\Users\tongt\Desktop\another_model',map_location=torch.device('cpu')))
+    torch.manual_seed(0)
     app = QApplication(sys.argv)
     gui = Template()
     gui.show()
