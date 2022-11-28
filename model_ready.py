@@ -8,13 +8,14 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-
 def get_class(model,data):
     classes =['Autos & Vehicles','Food & Drink','Pets & Animals','Science & Education','Sports']
+    model.eval()
     output = model(Google(data))
-    print(output)
+    #print(output)
     pred = None
     pred = output.max(1, keepdim=True)[1][0][0]
+    
     #for predict_batch in predict:
     #    for predicts in predict_batch:
      #       real_predict.append(classes[predicts.item()])
@@ -23,10 +24,11 @@ def get_class(model,data):
 
 def load_picture(path):
     image = Image.open(path)
+    
    # data_transform = transforms.Compose([transforms.RandomResizedCrop(224),transforms.ToTensor()])
     #validation_set = datasets.ImageFolder(path, transform=data_transform)
-    transform = transforms.RandomResizedCrop(224)
-    image = transform(image)
+    #transform = transforms.RandomResizedCrop(224)
+    #image = transform(image)
     validation_set=transforms.functional.to_tensor(image)
     validation_set=validation_set.unsqueeze(0)
     return validation_set
@@ -120,7 +122,8 @@ class Template(QWidget):
             if not filename:
                 return
         self.photo.setPixmap(QPixmap(filename))
-        self.text = get_class(model,load_picture('C:/Users/tongt/Downloads/BzBfJ-V8TYM.jpg'))
+        print(filename)
+        self.text = get_class(model,load_picture(filename))
         self.finished = True
     def btnClicked(self):
         self.chile_Win = ChildWindow(self.text)
@@ -131,8 +134,10 @@ class Template(QWidget):
 if __name__ == '__main__':
     googleNet = torch.hub.load('pytorch/vision:v0.10.0', 'googlenet', pretrained=True)
     Google = googleNet
+    model = None
     model = ANNClassifier_GOOGLE()
-    model.load_state_dict(torch.load(r'C:\Users\tongt\Desktop\another_model',map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load(r'C:\Users\tongt\Desktop\model24',map_location=torch.device('cpu')))
+    model.eval()
     torch.manual_seed(0)
     app = QApplication(sys.argv)
     gui = Template()
